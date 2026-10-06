@@ -1,5 +1,5 @@
 
-   import os
+import os
 from threading import Thread
 from flask import Flask
 
@@ -7,13 +7,14 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "BOT V6 LIVE - INFINITY"
+    return "BOT V6 LIVE"
 
 def run_web():
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
 
-Thread(target=run_web, daemon=True).start()         
+Thread(target=run_web, daemon=True).start()
+
 import os,json,asyncio,re
 from datetime import datetime,timedelta
 from telegram import Update,InlineKeyboardButton,InlineKeyboardMarkup
