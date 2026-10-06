@@ -1,40 +1,27 @@
 import os
 from flask import Flask
 from threading import Thread
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes, MessageHandler, filters
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 ADMIN_ID = int(os.environ.get("ADMIN_ID", "0"))
 
-web_app = Flask(__name__)
+web = Flask(__name__)
 
-@web_app.route('/')
+@web.route('/')
 def home():
-    return "Infinity Broadcast Bot is Live!"
+    return "Bot is LIVE! ✅"
 
-def run_web():
-    port = int(os.environ.get("PORT", 10000))
-    web_app.run(host='0.0.0.0', port=port)
+def run_flask():
+    web.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [[InlineKeyboardButton("📢 Broadcast", callback_data='broadcast')]]
-    await update.message.reply_text("Murakaza neza!", reply_markup=InlineKeyboardMarkup(keyboard))
-
-async def broadcast_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-    if query.from_user.id != ADMIN_ID:
-        await query.edit_message_text("Ntabwo wemerewe.")
-        return
-    await query.edit_message_text("Ohereza message:")
-
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != ADMIN_ID:
-        return
-    await update.message.reply_text(f"Yakiriwe: {update.message.text}")
+    await update.message.reply_text(f"✅ Bot ikora neza! ID yawe: {update.effective_user.id}")
 
 if __name__ == "__main__":
-    Thread(target=run_web, daemon=True).start()
+    Thread(target=run_flask, daemon=True).start()
+    print("Bot started...")
     app = Application.builder().token(BOT_TOKEN).build()
-    app.add
+    app.add_handler(CommandHandler("start", start))
+    app.run_polling()
