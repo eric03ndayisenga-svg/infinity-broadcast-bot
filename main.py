@@ -305,8 +305,8 @@ async def run_bot(tg_app):
 
 def main():
     tg_app = Application.builder().token(TOKEN).post_init(post_init).build()
-    tg_app.add_handler(CommandHandler("start", start_cmd))
-    tg_app.add_handler(CommandHandler("broadcast", broadcast_cmd))
+    tg_app.add_handler(CommandHandler("start", start))
+    tg_app.add_handler(CommandHandler("broadcast", broad_cmd))
     tg_app.add_handler(CommandHandler("auto", auto_cmd))
     tg_app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_mem))
     tg_app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, handle_msg))
