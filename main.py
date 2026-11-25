@@ -106,7 +106,6 @@ async def handle_msg(update,context):
     chat=update.effective_chat
     text=update.message.text or ""
     if await is_admin(update) and chat.type==ChatType.PRIVATE:
-        # --- HINDURA IGIHE ---
         if context.user_data.get("edit_job_id"):
             if text=="/cancel":
                 context.user_data["edit_job_id"]=None
@@ -135,7 +134,6 @@ async def handle_msg(update,context):
                 await update.message.reply_text("❌ Job ntiyabonetse")
             context.user_data["edit_job_id"]=None
             return
-        # --- AUTO MSG FLOW ---
         if context.user_data.get("auto_step")=="wait_msg":
             if text=="/cancel":
                 context.user_data["auto_step"]=None
@@ -216,11 +214,9 @@ async def btn(update,context):
         context.user_data["auto_step"]=None
         await q.edit_message_text("❌ Byanze.",reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("⬅️ Back",callback_data="back")]]))
         return
-    # --- HINDURA IGIHE BUTTON ---
     if d.startswith("edit_"):
         jid=d.replace("edit_","")
         context.user_data["edit_job_id"]=jid
-        # Shaka job
         cur="?"
         for j in jobs:
             if j["id"]==jid:
@@ -294,7 +290,6 @@ async def btn(update,context):
 
 async def post_init(tg_app):
     asyncio.create_task(loop_job(tg_app))
-import asyncio
 
 async def run_bot(tg_app):
     await tg_app.initialize()
@@ -310,9 +305,8 @@ def main():
     tg_app.add_handler(CommandHandler("auto", auto_cmd))
     tg_app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_mem))
     tg_app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, handle_msg))
-    tg_app.add_handler(CallbackQueryHandler(cb))
+    tg_app.add_handler(CallbackQueryHandler(btn))
     tg_app.add_handler(MessageHandler(filters.PHOTO | filters.VIDEO | filters.Document.ALL, handle_msg))
-    threading.Thread(target=run_flask, daemon=True).start()
     asyncio.run(run_bot(tg_app))
 
 if __name__ == '__main__':
