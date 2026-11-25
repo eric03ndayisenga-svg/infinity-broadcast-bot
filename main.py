@@ -294,17 +294,26 @@ async def btn(update,context):
 
 async def post_init(tg_app):
     asyncio.create_task(loop_job(tg_app))
+import asyncio
+
+async def run_bot(tg_app):
+    await tg_app.initialize()
+    await tg_app.start()
+    await tg_app.updater.start_polling()
+    while True:
+        await asyncio.sleep(3600)
 
 def main():
-    tg_app=Application.builder().token(TOKEN).post_init(post_init).build()
-    tg_app.add_handler(CommandHandler("start",start))
-    tg_app.add_handler(CommandHandler("broadcast",broad_cmd))
-    tg_app.add_handler(CommandHandler("auto",auto_cmd))
-    tg_app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS,new_mem))
-    tg_app.add_handler(CallbackQueryHandler(btn))
-    tg_app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND,handle_msg))
-    print("BOT V9 STARTED")
-    tg_app.run_polling()
+    tg_app = Application.builder().token(TOKEN).post_init(post_init).build()
+    tg_app.add_handler(CommandHandler("start", start_cmd))
+    tg_app.add_handler(CommandHandler("broadcast", broadcast_cmd))
+    tg_app.add_handler(CommandHandler("auto", auto_cmd))
+    tg_app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_mem))
+    tg_app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, handle_msg))
+    tg_app.add_handler(CallbackQueryHandler(cb))
+    tg_app.add_handler(MessageHandler(filters.PHOTO | filters.VIDEO | filters.Document.ALL, handle_msg))
+    threading.Thread(target=run_flask, daemon=True).start()
+    asyncio.run(run_bot(tg_app))
 
-if __name__=="__main__":
+if __name__ == '__main__':
     main()
